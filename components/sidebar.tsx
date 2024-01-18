@@ -67,7 +67,7 @@ function Sidebar() {
   return (
     <nav className="flex flex-col h-full space-y-4 py-4 text-white bg-[#111827]">
       <div className="flex-1 px-3 py-2">
-        <hgroup className="relative flex items-center mb-14 pl-3">
+        <div className="relative flex items-center mb-14 pl-3">
           <Image
             className="mr-4"
             width={32}
@@ -83,7 +83,7 @@ function Sidebar() {
               Genius
             </Link>
           </h1>
-        </hgroup>
+        </div>
         <ul className="space-y-1">
           {routes.map((route) => (
             <li key={route.href}>
