@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
@@ -57,11 +58,12 @@ const routes = [
     label: "Settings",
     icon: Settings,
     href: "/settings",
-    color: "text-gray-400",
   },
 ];
 
 function Sidebar() {
+  const pathname = usePathname();
+
   return (
     <nav className="flex flex-col h-full space-y-4 py-4 text-white bg-[#111827]">
       <div className="flex-1 px-3 py-2">
@@ -86,7 +88,12 @@ function Sidebar() {
           {routes.map((route) => (
             <li key={route.href}>
               <Link
-                className="flex flex-1 items-center justify-start w-full p-3 text-sm font-medium rounded-lg transition hover:text-white hover:bg-white/10"
+                className={cn(
+                  "flex flex-1 items-center justify-start w-full p-3 text-sm font-medium rounded-lg transition hover:text-white hover:bg-white/10",
+                  pathname === route.href
+                    ? "text-white bg-white/10"
+                    : "text-zinc-400",
+                )}
                 href={route.href}
               >
                 <route.icon className={cn("w-5 h-5 mr-3", route.color)} />
