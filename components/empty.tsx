@@ -8,7 +8,7 @@ function Empty({ label }: EmptyProps) {
   return (
     <div className="grid items-center justify-center h-full px-20 py-14">
       <div className="relative h-72 w-72">
-        <Image src="/empty.png" fill alt="Empty image" />
+        <Image src="/empty.png" fill sizes="100%" alt="Empty image" />
       </div>
       <p className="text-muted-foreground text-sm text-center">{label}</p>
     </div>
