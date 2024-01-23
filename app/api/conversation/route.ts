@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
-import OpenAI from "openai";
+import GigaChat from "gigachat-node";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const apiKey = process.env.GIGACHAT_CLIENT_ID_SECRET || '';
+const client = new GigaChat(
+  apiKey,
+  true,
+  true,
+  true
+);
 
 export async function POST(req: Request) {
   try {
@@ -16,7 +20,7 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthoriazed", { status: 401 });
     }
 
-    if (!openai.apiKey) {
+    if (!apiKey) {
       return new NextResponse("OpenAI API Key not configured", { status: 500 });
     }
 
@@ -24,8 +28,10 @@ export async function POST(req: Request) {
       return new NextResponse("Messages are required", { status: 400 });
     }
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+    await client.createToken();
+
+    const response = await await client.completion({
+      model: "GigaChat:latest",
       messages,
     });
     

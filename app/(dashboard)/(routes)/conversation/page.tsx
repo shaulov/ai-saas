@@ -7,7 +7,6 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MessageSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { OpenAI } from "openai";
 import { cn } from "@/lib/utils";
 import Heading from "@/components/heading";
 import Empty from "@/components/empty";
@@ -21,7 +20,7 @@ import { formSchema } from "./constants";
 
 export default function ConversationPage() {
   const router = useRouter();
-  const [messages, setMessages] = useState<OpenAI.Chat.ChatCompletionMessage[]>(
+  const [messages, setMessages] = useState<any[]>(
     [],
   );
 
@@ -35,7 +34,7 @@ export default function ConversationPage() {
   const isLoading = form.formState.isSubmitting;
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const userMessage: OpenAI.Chat.ChatCompletionMessageParam = {
+      const userMessage: any = {
         role: "user",
         content: values.prompt,
       };
@@ -106,15 +105,15 @@ export default function ConversationPage() {
             {messages.map((message) => (
               <li
                 className={cn(
-                  "flex items-start gap-x-8 w-full p-8 rounded-lg",
-                  message.role === "assistant" ? "bg-muted" : "bg-white border-black/10",
+                  "flex items-center gap-x-4 w-full p-8 rounded-lg",
+                  message.role === "user" ? "bg-white border-black/10" : "bg-muted",
                 )}
                 key={message.content}
               >
-                {message.role === "assistant" ? (
-                  <BotAvatar />
-                ) : (
+                {message.role === "user" ? (
                   <UserAvatar />
+                ) : (
+                  <BotAvatar />
                 )}
                 <p className="text-sm">{message.content}</p>
               </li>
