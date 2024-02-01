@@ -38,13 +38,17 @@ export default function ConversationPage() {
         role: "user",
         content: values.prompt,
       };
-      const newMessages = [...messages, userMessage];
 
       const response = await axios.post("/api/conversation", {
-        messages: newMessages,
+        message: userMessage.content,
       });
 
-      setMessages((current) => [...current, userMessage, response.data]);
+      const newMessage: any = {
+        role: "assistant",
+        content: response.data.join(' '),
+      }
+
+      setMessages((current) => [...current, userMessage, newMessage]);
       form.reset();
     } catch (error) {
       // TODO: Open pro modal
