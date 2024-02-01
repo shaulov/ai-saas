@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
 import GigaChat from "gigachat-node";
+import { increaseApiLimit, checkApiLimit } from "@/lib/api-limit";
 
 const apiKey = process.env.GIGACHAT_CLIENT_ID_SECRET || '';
 const client = new GigaChat(
@@ -32,12 +33,18 @@ export async function POST(req: Request) {
       return new NextResponse("Messages are required", { status: 400 });
     }
 
+    const freeTrial = await checkApiLimit();
+
+    if (!freeTrial) return new NextResponse("Free trial has expired", { status: 403 });
+
     await client.createToken();
 
     const response = await await client.completion({
       model: "GigaChat:latest",
       messages: [instructionMessage, ...messages],
     });
+
+    await increaseApiLimit();
     
     return NextResponse.json(response.choices[0].message);
   } catch (error) {

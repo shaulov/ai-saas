@@ -1,20 +1,18 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
-import GigaChat from "gigachat-node";
+import Replicate from "replicate";
+import { increaseApiLimit, checkApiLimit } from "@/lib/api-limit";
 
-const apiKey = process.env.GIGACHAT_CLIENT_ID_SECRET || '';
-const client = new GigaChat(
-  apiKey,
-  true,
-  true,
-  true
-);
+const apiKey = process.env.REPLICATE_API_TOKEN || '';
+const replicate = new Replicate({
+  auth: apiKey,
+});
 
 export async function POST(req: Request) {
   try {
     const { userId } = auth();
     const body = await req.json();
-    const { messages } = body;
+    const { message } = body;
 
     if (!userId) {
       return new NextResponse("Unauthoriazed", { status: 401 });
@@ -24,18 +22,26 @@ export async function POST(req: Request) {
       return new NextResponse("API Key not configured", { status: 500 });
     }
 
-    if (!messages) {
+    if (!message) {
       return new NextResponse("Messages are required", { status: 400 });
     }
 
-    await client.createToken();
+    const freeTrial = await checkApiLimit();
 
-    const response = await await client.completion({
-      model: "GigaChat:latest",
-      messages,
-    });
+    if (!freeTrial) return new NextResponse("Free trial has expired", { status: 403 });
+
+    const output = await replicate.run(
+      "sharaddition/paraphrase-gpt:3a66bc6c1327de5459cb18b2f10550693bc69662a5e29c67a971776f8574f1b1",
+      {
+        input: {
+          prompt: message,
+        },
+      }
+    );
+
+    await increaseApiLimit();
     
-    return NextResponse.json(response.choices[0].message);
+    return NextResponse.json(output);
   } catch (error) {
     console.log("[CONVERSATION_ERROR]", error);
     return new NextResponse("Internal error", { status: 500 });
