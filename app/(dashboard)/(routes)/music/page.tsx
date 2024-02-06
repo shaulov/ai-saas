@@ -7,6 +7,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Music } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useProModal } from "@/hooks/use-pro-modal";
 import Heading from "@/components/heading";
 import Empty from "@/components/empty";
 import Loader from "@/components/loader";
@@ -18,6 +19,7 @@ import { formSchema } from "./constants";
 export default function MusicPage() {
   const router = useRouter();
   const [music, setMusic] = useState<string>();
+  const proModal = useProModal();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,9 +35,10 @@ export default function MusicPage() {
       const response = await axios.post("/api/music", values);
       setMusic(response.data);
       form.reset();
-    } catch (error) {
-      // TODO: Open pro modal
-      console.log(error);
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       router.refresh();
     }
@@ -85,9 +88,7 @@ export default function MusicPage() {
               <Loader />
             </div>
           )}
-          {!music && !isLoading && (
-            <Empty label="No music generated" />
-          )}
+          {!music && !isLoading && <Empty label="No music generated" />}
           {music && (
             <audio className="w-full mt-8" controls>
               <source src={music} />

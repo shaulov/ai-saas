@@ -7,12 +7,19 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Download, ImageIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useProModal } from "@/hooks/use-pro-modal";
 import Heading from "@/components/heading";
 import Empty from "@/components/empty";
 import Loader from "@/components/loader";
 import { Card, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { amountOptions, formSchema, resolutionOptions } from "./constants";
@@ -21,6 +28,7 @@ import Image from "next/image";
 export default function ImagePage() {
   const router = useRouter();
   const [images, setImages] = useState<string[]>([]);
+  const proModal = useProModal();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,9 +50,10 @@ export default function ImagePage() {
       setImages(urls);
 
       form.reset();
-    } catch (error) {
-      // TODO: Open pro modal
-      console.log(error);
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       router.refresh();
     }
@@ -97,7 +106,7 @@ export default function ImagePage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {amountOptions.map(option => (
+                      {amountOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -124,7 +133,7 @@ export default function ImagePage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {resolutionOptions.map(option => (
+                      {resolutionOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -152,16 +161,13 @@ export default function ImagePage() {
             <Empty label="No images generated" />
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
-            {images.map(src => (
-              <Card
-                className="rounded-lg overflow-hidden"
-                key={src}
-              >
+            {images.map((src) => (
+              <Card className="rounded-lg overflow-hidden" key={src}>
                 <div className="relative aspect-square">
                   <Image src={src} fill alt="" />
                 </div>
                 <CardFooter className="p-2">
-                  <Button 
+                  <Button
                     className="w-full"
                     variant="secondary"
                     onClick={() => window.open(src)}

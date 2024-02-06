@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Code } from "lucide-react";
 import { useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
+import { useProModal } from "@/hooks/use-pro-modal";
 import { cn } from "@/lib/utils";
 import Heading from "@/components/heading";
 import Empty from "@/components/empty";
@@ -22,6 +23,7 @@ import { formSchema } from "./constants";
 export default function CodePage() {
   const router = useRouter();
   const [messages, setMessages] = useState<any[]>([]);
+  const proModal = useProModal();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,9 +47,10 @@ export default function CodePage() {
 
       setMessages((current) => [...current, userMessage, response.data]);
       form.reset();
-    } catch (error) {
-      // TODO: Open pro modal
-      console.log(error);
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       router.refresh();
     }
@@ -112,7 +115,7 @@ export default function CodePage() {
                 key={message.content}
               >
                 {message.role === "user" ? <UserAvatar /> : <BotAvatar />}
-                <ReactMarkdown 
+                <ReactMarkdown
                   className="w-full text-sm leading-7 overflow-hidden"
                   components={{
                     pre: ({ node, ...props }) => (

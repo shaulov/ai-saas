@@ -7,6 +7,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MessageSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useProModal } from "@/hooks/use-pro-modal";
 import { cn } from "@/lib/utils";
 import Heading from "@/components/heading";
 import Empty from "@/components/empty";
@@ -20,9 +21,8 @@ import { formSchema } from "./constants";
 
 export default function ConversationPage() {
   const router = useRouter();
-  const [messages, setMessages] = useState<any[]>(
-    [],
-  );
+  const [messages, setMessages] = useState<any[]>([]);
+  const proModal = useProModal();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,14 +45,15 @@ export default function ConversationPage() {
 
       const newMessage: any = {
         role: "assistant",
-        content: response.data.join(' '),
-      }
+        content: response.data.join(" "),
+      };
 
       setMessages((current) => [...current, userMessage, newMessage]);
       form.reset();
-    } catch (error) {
-      // TODO: Open pro modal
-      console.log(error);
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       router.refresh();
     }
@@ -110,15 +111,13 @@ export default function ConversationPage() {
               <li
                 className={cn(
                   "flex items-center gap-x-4 w-full p-8 rounded-lg",
-                  message.role === "user" ? "bg-white border-black/10" : "bg-muted",
+                  message.role === "user"
+                    ? "bg-white border-black/10"
+                    : "bg-muted",
                 )}
                 key={message.content}
               >
-                {message.role === "user" ? (
-                  <UserAvatar />
-                ) : (
-                  <BotAvatar />
-                )}
+                {message.role === "user" ? <UserAvatar /> : <BotAvatar />}
                 <p className="text-sm">{message.content}</p>
               </li>
             ))}

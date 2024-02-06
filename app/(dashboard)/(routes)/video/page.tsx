@@ -7,6 +7,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Video } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useProModal } from "@/hooks/use-pro-modal";
 import Heading from "@/components/heading";
 import Empty from "@/components/empty";
 import Loader from "@/components/loader";
@@ -18,6 +19,7 @@ import { formSchema } from "./constants";
 export default function MusicPage() {
   const router = useRouter();
   const [video, setVideo] = useState<string>();
+  const proModal = useProModal();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,9 +35,10 @@ export default function MusicPage() {
       const response = await axios.post("/api/video", values);
       setVideo(response.data);
       form.reset();
-    } catch (error) {
-      // TODO: Open pro modal
-      console.log(error);
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       router.refresh();
     }
@@ -85,9 +88,7 @@ export default function MusicPage() {
               <Loader />
             </div>
           )}
-          {!video && !isLoading && (
-            <Empty label="No video generated" />
-          )}
+          {!video && !isLoading && <Empty label="No video generated" />}
           {video && (
             <video className="w-full h-[360px] aspect-video mt-8" controls>
               <source src={video} />
