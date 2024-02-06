@@ -24,12 +24,12 @@ function ProModal() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex justify-center items-center flex-col gap-y-4 pb-2">
-            <p className="flex items-center gap-x-2 py-1 font-bold">
+            <span className="flex items-center gap-x-2 py-1 font-bold">
               Upgrade to Genius
               <Badge className="py-1 uppercase text-sm" variant="premium">pro</Badge>
-            </p>
+            </span>
           </DialogTitle>
-          <DialogDescription className="pt-2 text-center font-medium text-zinc-900">
+          <DialogDescription className="pt-2 text-center font-medium text-zinc-900" asChild>
             <ul className="space-y-2">
               {tools.map(tool => (
                 <li key={tool.label}>
