@@ -20,20 +20,20 @@ export async function POST(req: Request) {
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
   }
 
-  const sessions = event.data.object as Stripe.Checkout.Session;
+  const session = event.data.object as Stripe.Checkout.Session;
 
   if (event.type === "checkout.session.completed") {
     const subscription = await stripe.subscriptions.retrieve(
-      sessions.subscription as string,
+      session.subscription as string,
     );
 
-    if (!sessions?.metadata?.userId) {
+    if (!session?.metadata?.userId) {
       return new NextResponse("User ID is required", { status: 400 });
     }
 
     await prismadb.userSubscription.create({
       data: {
-        userId: sessions?.metadata?.userId,
+        userId: session?.metadata?.userId,
         stripeSubscriptionId: subscription.id,
         stripeCustomerId: subscription.customer as string,
         stripePriceId: subscription.items.data[0].price.id,
@@ -46,12 +46,12 @@ export async function POST(req: Request) {
 
   if (event.type === "invoice.payment_succeeded") {
     const subscription = await stripe.subscriptions.retrieve(
-      sessions.subscription as string,
+      session.subscription as string,
     );
 
     await prismadb.userSubscription.update({
       where: { stripeSubscriptionId: subscription.id },
-      data: { 
+      data: {
         stripePriceId: subscription.items.data[0].price.id,
         stripeCurrentPeriodEnd: new Date(
           subscription.current_period_end * 1000

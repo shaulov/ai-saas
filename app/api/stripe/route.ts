@@ -17,7 +17,7 @@ export async function GET() {
       where: { userId },
     });
 
-    if (userSubscription && userSubscription.stipeCustomerId) {
+    if (userSubscription && userSubscription.stripeCustomerId) {
       const stripeSession = await stripe.billingPortal.sessions.create({
         customer: userSubscription.stripeCustomerId,
         return_url: settingsUrl,
@@ -34,20 +34,20 @@ export async function GET() {
       billing_address_collection: "auto",
       customer_email: user.emailAddresses[0].emailAddress,
       line_items: [
-        { 
+        {
           price_data: {
             currency: "USD",
             product_data: {
               name: "Genius Pro",
-              description: "Unlimited AI Generations",
+              description: "Unlimited AI Generations"
             },
             unit_amount: 2000,
             recurring: {
-              interval: "month",
-            },
+              interval: "month"
+            }
           },
           quantity: 1,
-        }
+        },
       ],
       metadata: {
         userId,
