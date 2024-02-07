@@ -12,9 +12,10 @@ const montserrat = Montserrat({ weight: "600", subsets: ["latin"] });
 
 interface SidebarProps {
   apiLimitCount: number;
+  isPro: boolean;
 }
 
-function Sidebar({ apiLimitCount }: SidebarProps) {
+function Sidebar({ apiLimitCount = 0, isPro = false }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -56,7 +57,7 @@ function Sidebar({ apiLimitCount }: SidebarProps) {
           ))}
         </ul>
       </div>
-      <FreeCounter apiLimitCount={apiLimitCount} />
+      <FreeCounter apiLimitCount={apiLimitCount} isPro={isPro} />
     </nav>
   );
 }

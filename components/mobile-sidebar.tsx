@@ -7,9 +7,10 @@ import Sidebar from "@/components/sidebar";
 
 interface MobileSidebarProps {
   apiLimitCount: number;
+  isPro: boolean;
 }
 
-function MobileSidebar({ apiLimitCount }: MobileSidebarProps) {
+function MobileSidebar({ apiLimitCount, isPro }: MobileSidebarProps) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -19,7 +20,7 @@ function MobileSidebar({ apiLimitCount }: MobileSidebarProps) {
         </Button>
       </SheetTrigger>
       <SheetContent className="p-0" side="left">
-        <Sidebar apiLimitCount={apiLimitCount} />
+        <Sidebar apiLimitCount={apiLimitCount} isPro={isPro} />
       </SheetContent>
     </Sheet>
   );
