@@ -91,3 +91,5 @@ export const tools = [
 ];
 
 export const MAX_FREE_COUTNS = 5;
+
+export const DAY_IN_MS = 86_400_000;
