@@ -93,3 +93,30 @@ export const tools = [
 export const MAX_FREE_COUTNS = 5;
 
 export const DAY_IN_MS = 86_400_000;
+
+export const testimonials = [
+  {
+    name: "Ivan",
+    avatar: "I",
+    title: "Software developer",
+    description: "This is the best app I've used!",
+  },
+  {
+    name: "Antonio",
+    avatar: "A",
+    title: "Designer",
+    description: "I use this daily for generating new photos!",
+  },
+  {
+    name: "Mark",
+    avatar: "M",
+    title: "CEO",
+    description: "This app has changed my life, cannot imagine working without it!",
+  },
+  {
+    name: "Mary",
+    avatar: "M",
+    title: "CFO",
+    description: "The best in class, definitely worth the premium subscription!",
+  },
+];
