@@ -12,11 +12,7 @@ function ModalProvider() {
 
   if (!mounted) return null;
 
-  return (
-    <>
-      <ProModal />
-    </>
-  );
+  return <ProModal />;
 }
 
 export default ModalProvider;
